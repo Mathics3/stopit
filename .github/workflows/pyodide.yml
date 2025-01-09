@@ -52,8 +52,9 @@ jobs:
           # Activate the virtual environment
           source .venv-pyodide/bin/activate
 
-          python -m pip install "setuptools>=70.0.0" PyYAML click packaging pytest
-          python -m pip install -e .
+          pip install "setuptools>=70.0.0" PyYAML click packaging pytest
+
+          pip install --no-build-isolation -v -v -v  -e .
       - name: Test stopit
         run: |
           python -c "import sys; print(sys.path); import stopit"	
