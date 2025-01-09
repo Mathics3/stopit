@@ -56,5 +56,5 @@ jobs:
           python -m pip install -e .
       - name: Test stopit
         run: |
-          python -c "import sys; print(sys.path); import your_package_name"	
+          python -c "import sys; print(sys.path); import stopit"	
           python tests.py
