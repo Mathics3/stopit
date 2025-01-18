@@ -84,6 +84,12 @@ class TestNesting(unittest.TestCase):
             self.assertEqual(self.check_nest(10.0, 1.0, 5.0, handler), "inner")
             self.assertEqual(self.check_nest_swallow(10.0, 1.0, 5.0, handler), "inner")
 
+    if os.name == "posix":  # Other OS have no support for signal.SIGALRM
+        def test_signal_handler(self):
+            for settime, expect_time in ((-1.5, 1), (0, 1), (0.5, 1), (3, 3),
+                                         (3.2, 4)):
+                self.assertEqual(SignalTimeout(settime).seconds, expect_time)
+
 
 def suite():  # Func for setuptools.setup(test_suite=xxx)
     test_suite = unittest.TestSuite()

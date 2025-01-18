@@ -16,12 +16,16 @@ from .utils import TimeoutException, BaseTimeout, base_timeoutable
 ALARMS = []
 
 
-
 def handle_alarms(signum, frame):
     global ALARMS
-    new_alarms = [(ctx, max(0, remaining-1),)  for ctx, remaining in ALARMS]
-    expired = [ctx for ctx, remaining in new_alarms if remaining==0]
-    ALARMS = [(ctx, remaining,) for ctx, remaining in new_alarms if remaining>0]
+    new_alarms = [(ctx, max(0, remaining-1),) for ctx, remaining in ALARMS]
+    expired = [ctx for ctx, remaining in new_alarms if remaining == 0]
+    ALARMS = [
+        (
+         ctx,
+         remaining,
+        ) for ctx, remaining in new_alarms
+        if remaining > 0]
     if ALARMS:
         signal.alarm(1)
     for task in expired:
@@ -37,7 +41,11 @@ class SignalTimeout(BaseTimeout):
     """
 
     def __init__(self, seconds, swallow_exc=True):
-        seconds = int(seconds)  # alarm delay for signal MUST be int
+
+        # The alarm delay for a SIGALARM MUST be an integer
+        # greater than 1. Round up non-integer values.
+        seconds = max(1, int(seconds + 0.99))
+
         super(SignalTimeout, self).__init__(seconds, swallow_exc)
 
     def stop(self):
@@ -49,23 +57,31 @@ class SignalTimeout(BaseTimeout):
     # Required overrides
     def setup_interrupt(self):
         global ALARMS
-        for ctx, remaining  in ALARMS:
-            if ctx is self:
-                return
-        if len(ALARMS)==0:
+
+        # If we have already registered ourself, do nothing and
+        # return.
+        if any(ctx is self for ctx, _ in ALARMS):
+            return
+
+        # If no ALARMS have been set up before, register
+        # signal.SIGALRM.
+        if len(ALARMS) == 0:
             signal.signal(signal.SIGALRM, handle_alarms)
             signal.alarm(1)
+
+        # Register our self.seconds value in the global
+        # ALARMS registry.
         ALARMS.append((self, int(self.seconds),))
 
     def suppress_interrupt(self):
         global ALARMS
         ALARMS = [(ctx, remaining) for ctx, remaining in ALARMS if ctx is not self]
-        if len(ALARMS)==0:
+        if len(ALARMS) == 0:
             signal.alarm(0)
             signal.signal(signal.SIGALRM, signal.SIG_DFL)
 
 
-class signal_timeoutable(base_timeoutable):  #noqa
+class signal_timeoutable(base_timeoutable):  # noqa
     """A function or method decorator that raises a ``TimeoutException`` to
     decorated functions that should not last a certain amount of time.
     this one uses ``SignalTimeout`` context manager.
