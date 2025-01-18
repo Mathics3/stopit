@@ -1,7 +1,9 @@
-.DS_Store
-build/
-dist/
+*.egg-info
 *.pyc
 *.pyo
-*.egg-info
+.DS_Store
+/.pyodide-xbuildenv*
+/.python-version
 __pycache__/
+build/
+dist/
