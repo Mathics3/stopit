@@ -11,7 +11,7 @@ or callables with a context manager or a decorator.
 import os
 from setuptools import setup, find_packages
 
-version = '1.2dev0'
+version = '1.1.3.dev0'
 
 this_directory = os.path.abspath(os.path.dirname(__file__))
 

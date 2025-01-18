@@ -135,7 +135,7 @@ class base_timeoutable(object):  # noqa
     .. note::
 
        This is a base class that must be subclassed. subclasses must override
-       thz ``to_ctx_mgr`` with a timeout  context manager class which in turn
+       the ``to_ctx_mgr`` with a timeout  context manager class which in turn
        must subclasses of above ``BaseTimeout`` class.
     """
     to_ctx_mgr = None
