@@ -54,8 +54,9 @@ jobs:
           echo $PATH
 
           pip install "setuptools>=70.0.0" PyYAML click packaging pytest
-          python -m pip install --no-build-isolation -e .
+
+          pip install --no-build-isolation -v -v -v  -e .
       - name: Test stopit
         run: |
-          python -c "import sys; print(sys.path); import stopit
+          python -c "import sys; print(sys.path); import stopit"	
           # python tests.py
