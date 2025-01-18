@@ -50,7 +50,8 @@ jobs:
           pyodide venv .venv-pyodide
 
           # Activate the virtual environment
-          source .venv-pyodide/bin/activate
+          . .venv-pyodide/bin/activate
+          echo $PATH
 
           pip install "setuptools>=70.0.0" PyYAML click packaging pytest
           python -m pip install --no-build-isolation -e .
